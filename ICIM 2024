@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz</title>
+    <style>
+        body {
+            background-color: #ccc; /* Grey background */
+            font-family: Arial, sans-serif;
+        }
+        .quiz-container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .question-box {
+            background-color: #333;
+            color: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .options {
+            margin: 10px 0;
+        }
+        .option {
+            background-color: #000;
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .option:hover {
+            background-color: #444;
+        }
+        .submit-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <!-- Question 1 -->
+        <div class="question-box">
+            Problem: Students and parents often misunderstand each other.
+        </div>
+        <div class="options">
+            <div class="option">A) Ignore the problem</div>
+            <div class="option">B) Talk openly and regularly</div>
+            <div class="option">C) Argue until someone gives in</div>
+            <div class="option">D) Avoid talking to prevent fights</div>
+            <div class="option">E) Listen and try to understand each other</div>
+        </div>
+
+        <!-- Question 2 -->
+        <div class="question-box">
+            Problem: Too much pressure from parents can stress students out.
+        </div>
+        <div class="options">
+            <div class="option">A) Focus only on grades</div>
+            <div class="option">B) Support their effort, not just results</div>
+            <div class="option">C) Encourage a balanced life</div>
+            <div class="option">D) Compare them to other kids</div>
+            <div class="option">E) Expect too much from them</div>
+        </div>
+
+        <!-- Question 3 -->
+        <div class="question-box">
+            Problem: Parents and students often don’t understand each other due to the generation gap.
+        </div>
+        <div class="options">
+            <div class="option">A) Ignore each other’s opinions</div>
+            <div class="option">B) Parents should enforce their views</div>
+            <div class="option">C) Try to understand each other’s views</div>
+            <div class="option">D) Students should dismiss parents' opinions</div>
+            <div class="option">E) Find common ground</div>
+        </div>
+
+        <!-- Question 4 -->
+        <div class="question-box">
+            Problem: Conflicts over career expectations.
+        </div>
+        <div class="options">
+            <div class="option">A) Parents should choose the career</div>
+            <div class="option">B) Students should ignore parents</div>
+            <div class="option">C) Talk openly about career goals</div>
+            <div class="option">D) Avoid talking about careers</div>
+            <div class="option">E) Consider the student's interests and strengths</div>
+        </div>
+
+        <!-- Question 5 -->
+        <div class="question-box">
+            Problem: Balancing tradition with modern norms.
+        </div>
+        <div class="options">
+            <div class="option">A) Ignore cultural values</div>
+            <div class="option">B) Stick strictly to tradition</div>
+            <div class="option">C) Talk and find a compromise</div>
+            <div class="option">D) Only follow modern ways</div>
+            <div class="option">E) Respect culture while adapting to changes</div>
+        </div>
+
+        <!-- Question 6 -->
+        <div class="question-box">
+            Problem: Managing screen time.
+        </div>
+        <div class="options">
+            <div class="option">A) Allow unlimited screen time</div>
+            <div class="option">B) Ban all technology</div>
+            <div class="option">C) Set limits and create tech-free zones</div>
+            <div class="option">D) Let the student decide</div>
+            <div class="option">E) Parents should model healthy tech use</div>
+        </div>
+
+        <!-- Question 7 -->
+        <div class="question-box">
+            Problem: Effective discipline.
+        </div>
+        <div class="options">
+            <div class="option">A) No rules</div>
+            <div class="option">B) Strict punishment</div>
+            <div class="option">C) Set clear rules together</div>
+            <div class="option">D) Ignore bad behavior</div>
+            <div class="option">E) Reward good behavior</div>
+        </div>
+
+        <!-- Question 8 -->
+        <div class="question-box">
+            Problem: Concerns about peer influence.
+        </div>
+        <div class="options">
+            <div class="option">A) Stop the student from having friends</div>
+            <div class="option">B) Talk openly about friendships</div>
+            <div class="option">C) Ignore their social life</div>
+            <div class="option">D) Impose strict rules</div>
+            <div class="option">E) Help them make good decisions</div>
+        </div>
+
+        <div class="submit-btn" onclick="submitQuiz()">Submit</div>
+    </div>
+
+    <script>
+        function submitQuiz() {
+            alert('Quiz Submitted!');
+        }
+    </script>
+</body>
+</html>
