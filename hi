@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Quiz</title>
+    <style>
+        body {
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .quiz-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 1s ease-in-out;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 80vh;
+            overflow: hidden;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .question-box {
+            background-color: #333;
+            color: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            font-size: 20px;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .options {
+            margin: 10px 0;
+        }
+
+        .option {
+            background-color: #000;
+            color: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+            font-size: 18px;
+        }
+
+        .option:hover {
+            background-color: #444;
+            transform: scale(1.05);
+        }
+
+        .submit-btn {
+            display: inline-block;
+            padding: 15px 25px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-size: 18px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .submit-btn:hover {
+            background-color: #555;
+            transform: scale(1.05);
+        }
+
+        .result {
+            display: none;
+            font-size: 18px;
+            margin-top: 15px;
+            animation: fadeIn 0.5s ease-in-out;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .result.correct {
+            color: #28a745;
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+        }
+
+        .result.incorrect {
+            color: #dc3545;
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+        }
+
+        .score-display {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #fff;
+            padding: 10px 15px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .final-score {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            text-align: center;
+            padding-top: 20%;
+            box-sizing: border-box;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        .final-score h2 {
+            font-size: 40px;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .final-score p {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .final-score button {
+            padding: 15px 30px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 20px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .final-score button:hover {
+            background-color: #555;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <div id="score-display" class="score-display">Score: 0</div>
+        <div id="question-box" class="question-box"></div>
+        <div id="options" class="options"></div>
+        <div id="result" class="result"></div>
+        <div id="submit-btn" class="submit-btn" onclick="nextQuestion()">Next</div>
+    </div>
+
+    <div id="final-score" class="final-score">
+        <h2>Congratulations!</h2>
+        <p id="score-text"></p>
+        <button onclick="restartQuiz()">Restart Quiz</button>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                question: "Students and parents often face misunderstandings due to different perspectives. What are two good solutions to bridge this communication gap?",
+                options: [
+                    "Ignore the problem and hope it resolves itself",
+                    "Establish regular and open communication channels",
+                    "Argue until someone agrees",
+                    "Limit conversations to avoid conflict",
+                    "Encourage active listening and empathy"
+                ],
+                correct: [1, 4]
+            },
+            {
+                question: "Excessive academic pressure from parents can lead to student stress. What should parents focus on instead?",
+                options: [
+                    "Only on the student's grades",
+                    "Supporting the student's efforts, not just outcomes",
+                    "Encouraging a balanced lifestyle",
+                    "Comparing their child to others",
+                    "Setting unrealistic expectations"
+                ],
+                correct: [1, 2]
+            },
+            {
+                question: "What are constructive ways for parents and students to handle the generation gap?",
+                options: [
+                    "Both parties ignore each other's perspectives",
+                    "Parents enforce their views without question",
+                    "Both sides make an effort to understand each other's perspectives",
+                    "Students dismiss parents' opinions as outdated",
+                    "Focus on finding common ground"
+                ],
+                correct: [2, 4]
+            },
+            // Add additional questions here...
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let shuffledQuestions = [];
+
+        function shuffleQuestions() {
+            shuffledQuestions = quizData
+                .map((question, index) => ({ index, ...question }))
+                .sort(() => Math.random() - 0.5);
+        }
+
+        function loadQuestion() {
+            document.getElementById('result').style.display = 'none';
+            document.getElementById('submit-btn').style.display = 'none';
+
+            const questionData = shuffledQuestions[currentQuestion];
+            document.getElementById('question-box').innerText = `Problem ${currentQuestion + 1}: ${questionData.question}`;
+
+            const optionsContainer = document.getElementById('options');
+            optionsContainer.innerHTML = '';
+
+            questionData.options.forEach((option, index) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.classList.add('option');
+                optionDiv.innerText = option;
+                optionDiv.onclick = () => checkAnswer(index);
+                optionsContainer.appendChild(optionDiv);
+            });
+        }
+
+        function checkAnswer(selectedIndex) {
+            const questionData = shuffledQuestions[currentQuestion];
+            const resultElement = document.getElementById('result');
+
+            if (questionData.correct.includes(selectedIndex)) {
+                resultElement.innerText = "Correct!";
+                resultElement.className = 'result correct';
+                score += 100;
+            } else {
+                resultElement.innerText = `Incorrect. Correct answers: ${questionData.correct.map(i => questionData.options[i]).join(', ')}`;
+                resultElement.className = 'result incorrect';
+            }
+
+            document.getElementById('score-display').innerText = `Score: ${score}`;
+            resultElement.style.display = 'block';
+            document.getElementById('submit-btn').style.display = 'block';
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion < shuffledQuestions.length) {
+                loadQuestion();
+            } else {
+                showFinalScore();
+            }
+        }
+
+        function showFinalScore() {
+            document.getElementById('final-score').style.display = 'block';
+            document.getElementById('score-text').innerText = `Your final score is ${score} points.`;
+        }
+
+        function restartQuiz() {
+            currentQuesti<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Quiz</title>
+    <style>
+        body {
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .quiz-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+            height: 80vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .question-box {
+            background-color: #333;
+            color: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .options {
+            margin: 10px 0;
+        }
+
+        .option {
+            background-color: #000;
+            color: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+            font-size: 18px;
+        }
+
+        .option:hover {
+            background-color: #444;
+            transform: scale(1.05);
+        }
+
+        .submit-btn {
+            display: inline-block;
+            padding: 15px 25px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-size: 18px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .submit-btn:hover {
+            background-color: #555;
+            transform: scale(1.05);
+        }
+
+        .score-display {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #fff;
+            padding: 10px 15px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .result {
+            display: none;
+            font-size: 18px;
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .result.correct {
+            color: #28a745;
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+        }
+
+        .result.incorrect {
+            color: #dc3545;
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+        }
+
+        .final-score {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            text-align: center;
+            padding-top: 20%;
+            box-sizing: border-box;
+        }
+
+        .final-score h2 {
+            font-size: 40px;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .final-score p {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .final-score button {
+            padding: 15px 30px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 20px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .final-score button:hover {
+            background-color: #555;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <div id="score-display" class="score-display">Score: 0</div>
+        <div id="question-box" class="question-box"></div>
+        <div id="options" class="options"></div>
+        <div id="result" class="result"></div>
+        <div id="submit-btn" class="submit-btn" onclick="nextQuestion()">Next</div>
+    </div>
+
+    <div id="final-score" class="final-score">
+        <h2>Congratulations!</h2>
+        <p id="score-text"></p>
+        <button onclick="restartQuiz()">Restart Quiz</button>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                question: "Students and parents often face misunderstandings due to different perspectives. What are two good solutions to bridge this communication gap?",
+                options: [
+                    "Ignore the problem and hope it resolves itself",
+                    "Establish regular and open communication channels",
+                    "Argue until someone agrees",
+                    "Limit conversations to avoid conflict",
+                    "Encourage active listening and empathy"
+                ],
+                correct: [1, 4]
+            },
+            {
+                question: "Excessive academic pressure from parents can lead to student stress. What should parents focus on instead?",
+                options: [
+                    "Only on the student's grades",
+                    "Supporting the student's efforts, not just outcomes",
+                    "Encouraging a balanced lifestyle",
+                    "Comparing their child to others",
+                    "Setting unrealistic expectations"
+                ],
+                correct: [1, 2]
+            },
+            {
+                question: "What are constructive ways for parents and students to handle the generation gap?",
+                options: [
+                    "Both parties ignore each other's perspectives",
+                    "Parents enforce their views without question",
+                    "Both sides make an effort to understand each other's perspectives",
+                    "Students dismiss parents' opinions as outdated",
+                    "Focus on finding common ground"
+                ],
+                correct: [2, 4]
+            },
+            {
+                question: "How can parents and students avoid conflict over career expectations?",
+                options: [
+                    "Parents should dictate the career path",
+                    "Students should ignore parental advice",
+                    "Have open conversations about career aspirations",
+                    "Avoid discussing careers altogether",
+                    "Consider the student’s passions and strengths"
+                ],
+                correct: [2, 4]
+            },
+            {
+                question: "How can families balance traditional expectations with modern societal norms?",
+                options: [
+                    "Ignore cultural values",
+                    "Enforce strict adherence to tradition",
+                    "Encourage a dialogue and find a compromise",
+                    "Adopt only modern norms",
+                    "Respect cultural values while adapting to new environments"
+                ],
+                correct: [2, 4]
+            },
+            {
+                question: "What’s a good strategy for managing technology use and screen time?",
+                options: [
+                    "Allow unlimited screen time",
+                    "Ban all technology",
+                    "Set clear limits and create tech-free zones",
+                    "Let the student decide on their own",
+                    "Model healthy tech habits as parents"
+                ],
+                correct: [2, 4]
+            },
+            {
+                question: "What is an effective approach to discipline?",
+                options: [
+                    "No rules at all",
+                    "Strict punishment for every mistake",
+                    "Establish clear rules and consequences together",
+                    "Ignore misbehaviour",
+                    "Use positive reinforcement for good behaviour"
+                ],
+                correct: [2, 4]
+            },
+            {
+                question: "What’s a constructive way to address concerns about peer influence?",
+                options: [
+                    "Forbid the student from having friends",
+                    "Encourage open discussions about friendships",
+                    "Ignore the student’s social life",
+                    "Impose strict curfews and punishments",
+                    "Guide the student in making wise decisions"
+                ],
+                correct: [1, 4]
+            },
+            {
+                question: "How can students and parents resolve conflicts over differing priorities?",
+                options: [
+                    "Force the student to prioritise academics",
+                    "Ignore the student’s needs",
+                    "Help the student develop time management skills",
+                    "Allow the student to neglect responsibilities",
+                    "Create a balanced schedule together"
+                ],
+                correct: [2, 4]
+            },
+            {
+                question: "What are key strategies for resolving most conflicts between students and parents?",
+                options: [
+                    "Open communication and mutual understanding",
+                    "Ignoring the problem",
+                    "One side always giving in",
+                    "Arguing until someone wins",
+                    "Compromising when needed and respecting each other’s viewpoints"
+                ],
+                correct: [0, 4]
+            },
+            {
+                question: "What are two common distractions for students while studying at home?",
+                options: [
+                    "Television",
+                    "Mobile phones",
+                    "Siblings",
+                    "Outdoor noise",
+                    "House chores"
+                ],
+                correct: [0, 1]
+            },
+            {
+                question: "Which two factors often lead to students losing interest in their studies?",
+                options: [
+                    "Boring teaching methods",
+                    "Lack of sleep",
+                    "Too many extracurricular activities",
+                    "Difficult curriculum",
+                    "Peer pressure"
+                ],
+                correct: [0, 3]
+            },
+            // Add more questions here
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        function loadQuestion() {
+            const questionBox = document.getElementById('question-box');
+            const optionsBox = document.getElementById('options');
+            const resultBox = document.getElementById('result');
+            const submitBtn = document.getElementById('submit-btn');
+
+            const questionData = quizData[currentQuestionIndex];
+            questionBox.textContent = questionData.question;
+
+            optionsBox.innerHTML = '';
+            questionData.options.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'option';
+                optionElement.textContent = option;
+                optionElement.onclick = () => selectOption(index);
+                optionsBox.appendChild(optionElement);
+            });
+
+            resultBox.classList.remove('correct', 'incorrect');
+            resultBox.textContent = '';
+            submitBtn.style.display = 'none';
+        }
+
+        function selectOption(selectedIndex) {
+            const questionData = quizData[currentQuestionIndex];
+            const correctAnswers = questionData.correct;
+            const resultBox = document.getElementById('result');
+            const options = document.getElementsByClassName('option');
+
+            let isCorrect = correctAnswers.includes(selectedIndex);
+            if (isCorrect) {
+                score += 100;
+                resultBox.textContent = 'Correct!';
+                resultBox.classList.add('correct');
+            } else {
+                resultBox.textContent = `Incorrect. Correct answers: ${correctAnswers.map(i => quizData[currentQuestionIndex].options[i]).join(', ')}`;
+                resultBox.classList.add('incorrect');
+            }
+
+            Array.from(options).forEach((option, index) => {
+                if (correctAnswers.includes(index)) {
+                    option.style.backgroundColor = '#28a745';
+                } else {
+                    option.style.backgroundColor = '#dc3545';
+                }
+            });
+
+            document.getElementById('score-display').textContent = `Score: ${score}`;
+            document.getElementById('submit-btn').style.display = 'inline-block';
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < quizData.length) {
+                loadQuestion();
+            } else {
+                showFinalScore();
+            }
+        }
+
+        function showFinalScore() {
+            document.getElementById('final-score').style.display = 'flex';
+            document.getElementById('score-text').textContent = `Your final score is ${score}.`;
+        }
+
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            document.getElementById('final-score').style.display = 'none';
+            loadQuestion();
+            document.getElementById('score-display').textContent = `Score: ${score}`;
+        }
+
+        loadQuestion();
+    </script>
+</body>
+</html>
+
+            shuffleQuestions();
+            loadQuestion();
+            document.getElementById('final-score').style.display = 'none';
+        }
+
+        // Initialize the quiz
+        shuffleQuestions();
+        loadQuestion();
+    </script>
+</body>
+</html>
